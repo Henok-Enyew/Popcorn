@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import PulseLoader from "react-spinners/PulseLoader";
 import "./index.css";
 const tempMovieData = [
   {
@@ -50,29 +51,70 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+const KEY = "98c96d4c";
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState(tempWatchedData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [query, setQuery] = useState("");
+  useEffect(function () {
+    async function fetchMovies() {
+      setIsLoading(true);
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${KEY}&s=the dictator`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+      setIsLoading(false);
+    }
+    fetchMovies();
+  }, []);
+  function handleQuery(q) {
+    console.log(q);
+    q.length > 2 &&
+      fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${q}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setMovies(data.Search);
+          console.log(data.Search);
+        });
+    setQuery(q);
+  }
   return (
     <>
       <Nav>
+        <Search query={query} setQuery={handleQuery} />
         <NumResults movies={movies} />
       </Nav>
       <Main>
-        <ListBox>
-          <MovieList movies={movies} />
-        </ListBox>
-        <WatchedBox />
+        <Box>
+          {isLoading ? (
+            <Loader loading={isLoading} />
+          ) : (
+            <MovieList movies={movies} />
+          )}
+        </Box>
+        <Box>
+          <WatchedSummary watched={watched} />
+          <WatchedList watched={watched} />
+        </Box>
       </Main>
     </>
   );
 }
-
+function Loader({ loading }) {
+  return (
+    <div className="loader">
+      {" "}
+      <PulseLoader size={32} color="#7950f2" loading={loading} />
+    </div>
+  );
+}
 function Nav({ children }) {
   return (
     <nav className="nav-bar">
       <Logo />
-      <Search />
+      {/* <Search /> */}
       {children}
     </nav>
   );
@@ -87,8 +129,8 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
+  // const [query, setQuery] = useState("");
   return (
     <input
       className="search"
@@ -103,36 +145,13 @@ function Search() {
 function NumResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{0}</strong> results
     </p>
   );
 }
 
 function Main({ children }) {
   return <main className="main">{children}</main>;
-}
-
-function WatchedBox() {
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [isOpen2, setIsOpen2] = useState(true);
-
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-
-          <WatchedList watched={watched} />
-        </>
-      )}
-    </div>
-  );
 }
 
 function WatchedList({ watched }) {
@@ -198,17 +217,14 @@ function WatchedSummary({ watched }) {
   );
 }
 
-function ListBox({ children }) {
-  const [isOpen1, setIsOpen1] = useState(true);
+function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen1((open) => !open)}
-      >
-        {isOpen1 ? "–" : "+"}
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
       </button>
-      {isOpen1 && children}
+      {isOpen && children}
     </div>
   );
 }
