@@ -61,6 +61,7 @@ export default function App() {
         setMovies([]);
         return;
       }
+      handleCloseSelectedId();
       fetchMovies();
       return function () {
         controller.abort();
@@ -170,6 +171,19 @@ function MovieDetails({
       };
     },
     [title]
+  );
+
+  useEffect(
+    function () {
+      function escape(e) {
+        if (e.code === "Escape") onCloseSelectedId();
+      }
+      document.addEventListener("keydown", escape);
+      return function () {
+        document.removeEventListener("keydown", escape);
+      };
+    },
+    [onCloseSelectedId]
   );
   return (
     <div className="details">
