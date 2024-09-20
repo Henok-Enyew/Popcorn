@@ -9,11 +9,12 @@ const average = (arr) =>
 const KEY = "98c96d4c";
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(() =>
-    JSON.parse(localStorage.getItem("watched"))
-  );
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [watched, setWatched] = useState(() => {
+    const storedWatch = JSON.parse(localStorage.getItem("watched"));
+    return storedWatch || [];
+  });
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
