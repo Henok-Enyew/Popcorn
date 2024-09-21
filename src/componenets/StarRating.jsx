@@ -1,4 +1,4 @@
-import "./star.css";
+import "../styles/star.css";
 import { useState } from "react";
 
 export default function StarRating({
