@@ -44,7 +44,7 @@ Check out the live demo here: [Popcorn Movies](https://pop-corn-movies.netlify.a
 5. Open your browser and visit http://localhost:3000 to view the app.
 
 ## 📂 Project Structure
-
+``` 
 src/
 ├── assets/ # Static images and assets
 ├── components/ # Reusable components
@@ -53,7 +53,7 @@ src/
 ├── utils/ # Utility functions
 ├── App.jsx # Main app component
 └── index.jsx # Entry point
-
+   ```
 ## 🧑‍💻 Author
 
 - **Henok Enyew 🐱‍👤**
